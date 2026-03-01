@@ -2,8 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { analyzeImage } from "@/lib/api";
-import { Report } from "@/types/report";
+import axios from "axios";
+import { API_BASE } from "@/lib/config";
+import { Report, SeverityLevel } from "@/types/report";
 import UploadDropzone from "@/components/UploadDropzone";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import SeverityBadge from "@/components/SeverityBadge";
@@ -36,10 +37,44 @@ export default function AnalyzePage() {
         setResult(null);
 
         try {
-            const report = await analyzeImage(file);
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await axios.post(
+                `${API_BASE}/analyze`,
+                formData,
+                {
+                    headers: { "Content-Type": "multipart/form-data" }
+                }
+            );
+
+            const data = response.data;
+            const diseaseName = data.recommendation?.disease || data.vision?.disease || "Unknown Disease";
+            let severity = data.recommendation?.severity || "Moderate";
+
+            if (diseaseName.toLowerCase().endsWith("healthy")) {
+                severity = "Low";
+            }
+
+            const report: Report = {
+                id: `rpt-${Date.now()}`,
+                disease: diseaseName,
+                confidence: data.vision?.confidence || 0,
+                severity: severity as SeverityLevel,
+                treatment: data.recommendation?.treatment || "No treatment advised.",
+                follow_up: data.recommendation?.follow_up || "N/A",
+                severityGuide: data.recommendation?.severityGuide,
+                imageUrl: data.image_url,
+                date: new Date().toISOString().split("T")[0]
+            };
+
             setResult(report);
-        } catch {
-            setError("Analysis failed. Please try again with a different image.");
+        } catch (err: any) {
+            if (err.response && err.response.status === 500) {
+                setError("Server Error (500): The backend failed to process the image.");
+            } else {
+                setError(err.response?.data?.message || err.message || "Analysis failed. Please try again with a different image.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -163,8 +198,14 @@ export default function AnalyzePage() {
                             <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
                                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4 mb-5">
                                     <div className="flex items-start gap-3">
-                                        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-500/10">
-                                            <Bug className="h-6 w-6 text-red-600 dark:text-red-400" />
+                                        <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${result.severity === 'Low' ? 'bg-emerald-500/10' :
+                                            result.severity === 'Moderate' ? 'bg-amber-500/10' :
+                                                'bg-red-500/10'
+                                            }`}>
+                                            <Bug className={`h-6 w-6 ${result.severity === 'Low' ? 'text-emerald-600 dark:text-emerald-400' :
+                                                result.severity === 'Moderate' ? 'text-amber-600 dark:text-amber-400' :
+                                                    'text-red-600 dark:text-red-400'
+                                                }`} />
                                         </div>
                                         <div>
                                             <h2 className="text-xl font-bold">{result.disease}</h2>
@@ -187,6 +228,19 @@ export default function AnalyzePage() {
                                 followUp={result.follow_up}
                                 preventiveMeasures={result.preventiveMeasures}
                             />
+
+                            {/* Severity Guide Section */}
+                            {result.severityGuide && (
+                                <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-sm">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <AlertCircle className="h-5 w-5 text-amber-500" />
+                                        <h3 className="font-semibold text-lg">Severity Guide</h3>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground leading-relaxed">
+                                        {result.severityGuide}
+                                    </p>
+                                </div>
+                            )}
 
                             {/* New Analysis Button */}
                             <button

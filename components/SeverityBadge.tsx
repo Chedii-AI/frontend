@@ -31,6 +31,12 @@ const severityConfig: Record<
         border: "border-red-500/20",
         icon: AlertTriangle,
     },
+    High: {
+        bg: "bg-red-500/10 dark:bg-red-500/15",
+        text: "text-red-700 dark:text-red-400",
+        border: "border-red-500/20",
+        icon: AlertTriangle,
+    },
 };
 
 const sizeClasses = {

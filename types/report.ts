@@ -1,13 +1,14 @@
-export type SeverityLevel = "Low" | "Moderate" | "Severe";
+export type SeverityLevel = "Low" | "Moderate" | "High" | "Severe";
 
 export interface Report {
-    id: string;
+    id?: string;
     disease: string;
     confidence: number;
     severity: SeverityLevel;
     treatment: string;
     follow_up: string;
-    date: string;
+    severityGuide?: string;
+    date?: string;
     imageUrl?: string;
     cropType?: string;
     preventiveMeasures?: string[];

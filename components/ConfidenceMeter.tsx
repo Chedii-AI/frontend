@@ -17,7 +17,9 @@ export default function ConfidenceMeter({
     showLabel = true,
     className,
 }: ConfidenceMeterProps) {
-    const percentage = Math.round(confidence * 100);
+    const val = confidence <= 1 ? confidence * 100 : confidence;
+    const percentage = Number(val.toFixed(2));
+    const displayPercentage = val.toFixed(2);
 
     const getColor = () => {
         if (percentage >= 85) return "from-emerald-500 to-emerald-400";
@@ -47,7 +49,7 @@ export default function ConfidenceMeter({
                             Confidence
                         </span>
                     </div>
-                    <span className="text-sm font-bold tabular-nums">{percentage}%</span>
+                    <span className="text-sm font-bold tabular-nums">{displayPercentage}%</span>
                 </div>
             )}
             <div
