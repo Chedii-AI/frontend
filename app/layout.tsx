@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   keywords: ["crop disease", "AI", "agriculture", "plant health", "farming"],
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
