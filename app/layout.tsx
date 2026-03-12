@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Navbar from "@/components/Navbar";
 
+
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
