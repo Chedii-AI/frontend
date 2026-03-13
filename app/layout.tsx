@@ -15,8 +15,6 @@ export const metadata: Metadata = {
     "Detect crop diseases early, get AI-powered treatment recommendations, and protect your harvest with ChediiAI.",
   keywords: ["crop disease", "AI", "agriculture", "plant health", "farming"],
 };
-
-
 export default function RootLayout({
   children,
 }: Readonly<{
