@@ -12,6 +12,7 @@ const inter = Inter({
 
 
 
+
 export const metadata: Metadata = {
   title: "ChediiAI — AI-Powered Crop Intelligence",
   description:
@@ -23,7 +24,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
