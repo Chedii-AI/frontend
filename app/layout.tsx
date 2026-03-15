@@ -10,6 +10,8 @@ const inter = Inter({
 });
 
 
+
+
 export const metadata: Metadata = {
   title: "ChediiAI — AI-Powered Crop Intelligence",
   description:
